@@ -1,0 +1,19 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "llmtop"
+dynamic = ["version"]
+description = "htop for your LLM Mac: temps, power, GPU, loaded models and tok/s"
+requires-python = ">=3.10"
+dependencies = ["psutil>=5.9", "requests>=2.28", "rich>=13"]
+
+[project.scripts]
+llmtop = "llm_top:main"
+
+[tool.setuptools]
+py-modules = ["llm_top"]
+
+[tool.setuptools.dynamic]
+version = { attr = "llm_top.__version__" }
