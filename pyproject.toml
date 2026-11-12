@@ -6,6 +6,9 @@ build-backend = "setuptools.build_meta"
 name = "llmtop"
 dynamic = ["version"]
 description = "htop for your LLM Mac: temps, power, GPU, loaded models and tok/s"
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 dependencies = ["psutil>=5.9", "requests>=2.28", "rich>=13"]
 

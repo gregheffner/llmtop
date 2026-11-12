@@ -45,7 +45,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 
 console = Console()
 GB = 1024 ** 3
