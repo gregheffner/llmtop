@@ -20,6 +20,16 @@ htop for your LLM Mac. One terminal screen showing what your Apple Silicon machi
 
 ## Install
 
+With Homebrew (installs macmon for you):
+
+```sh
+brew tap gregheffner/tap
+brew trust gregheffner/tap   # Homebrew 7 and newer only
+brew install llmtop
+```
+
+Or with pipx:
+
 ```sh
 brew install macmon pipx
 pipx install git+https://github.com/gregheffner/llmtop
