@@ -45,7 +45,7 @@ from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 
 console = Console()
 GB = 1024 ** 3
@@ -524,6 +524,36 @@ def poll_models(ollama, lmstudio):
     return rows
 
 
+# ------------------- one-shot model CLIs (no server to poll) -----------------
+# mflux runs as a plain process per image, so it is found in the process table.
+CLI_PREFIXES = ("mflux-generate", "mflux-train", "mflux-upscale")
+
+
+def poll_cli_models():
+    rows = []
+    for p in psutil.process_iter(["cmdline", "memory_info", "create_time"]):
+        try:
+            cmd = p.info.get("cmdline") or []
+            # argv[0] is python, the tool is argv[1]; a compiled shim puts it in argv[0]
+            tool = next((os.path.basename(a) for a in cmd[:2]
+                         if os.path.basename(a).startswith(CLI_PREFIXES)), None)
+            if not tool:
+                continue
+            opts = dict(zip(cmd, cmd[1:]))
+            model = opts.get("--model") or opts.get("-m") or tool.split("-", 2)[-1]
+            model = model.rstrip("/").rsplit("/", 1)[-1]
+            q = opts.get("--quantize") or opts.get("-q")
+            m = re.search(r"(\d+)-?bit", model, re.I)
+            quant = f"{q}bit" if q else (m.group(0) if m else "")
+            mi = p.info.get("memory_info")
+            up = int(time.time() - (p.info.get("create_time") or time.time()))
+            rows.append(("mflux", model, quant, mi.rss if mi else None, None,
+                         f"RUNNING {up // 60}m{up % 60:02d}s"))
+        except (psutil.NoSuchProcess, psutil.AccessDenied):
+            pass
+    return rows
+
+
 # ------------------------------ panels ---------------------------------------
 def header(cfg, proxy_up: bool) -> Panel:
     load = os.getloadavg()
@@ -645,7 +675,7 @@ def ram_panel(mm: Macmon) -> Panel:
 
 
 def models_panel(cfg, extra_rows=()):
-    rows = poll_models(cfg.ollama, cfg.lmstudio) + list(extra_rows)
+    rows = poll_models(cfg.ollama, cfg.lmstudio) + list(extra_rows) + poll_cli_models()
     t = Table(box=box.SIMPLE_HEAD, pad_edge=False, expand=True)
     for col, just, ov in (("SRC", "left", "crop"), ("MODEL", "left", "ellipsis"),
                           ("SIZE/QUANT", "left", "crop"), ("VRAM", "right", "crop"),

@@ -7,7 +7,7 @@ htop for your LLM Mac. One terminal screen showing what your Apple Silicon machi
 ## What it shows
 
 - **CPU / GPU / RAM**: temperatures, power draw, fan speed, memory pressure, per-core load, and a GPU utilization history chart (via [macmon](https://github.com/vladkens/macmon), no sudo)
-- **Loaded models** from oMLX, Ollama, and LM Studio
+- **Loaded models** from oMLX, Ollama, and LM Studio, plus running mflux image jobs
 - **Token rates**: prompt processing and generation tok/s, from oMLX session stats and/or an optional capture proxy
 - **System health**: swap, battery, thermal state, disk, load, uptime
 - **Top processes**, sortable by CPU or memory
